@@ -22,24 +22,24 @@ export default function BudgetsPage() {
   };
 
   return (
-    <div className="w-full max-w-7xl mx-auto space-y-8 animate-in fade-in zoom-in duration-500">
-      <div className="flex flex-col mb-8 mt-2">
-        <h2 className="text-4xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-teal-500 dark:from-blue-400 dark:to-teal-300">
+    <div className="w-full max-w-7xl mx-auto space-y-4 md:space-y-8 animate-in fade-in zoom-in duration-500">
+      <div className="flex flex-col mb-4 md:mb-8 mt-2">
+        <h2 className="text-3xl md:text-4xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-teal-500 dark:from-blue-400 dark:to-teal-300">
           Budgets
         </h2>
-        <p className="text-slate-500 dark:text-slate-400 mt-2">
+        <p className="text-sm md:text-base text-slate-500 dark:text-slate-400 mt-1 md:mt-2">
           Track your spending limits across categories.
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
         {budgets.map((budget, i) => {
           const spent = getSpent(budget.category);
           const percent = Math.min((spent / budget.limit) * 100, 100);
           const isOver = spent > budget.limit;
 
           return (
-            <GlassCard key={i} className="p-6">
+            <GlassCard key={i} className="p-4 md:p-6">
               <div className="flex justify-between items-end mb-4">
                 <div>
                   <h3 className="font-bold text-lg text-slate-800 dark:text-slate-200">{budget.category}</h3>

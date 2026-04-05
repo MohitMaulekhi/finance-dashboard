@@ -5,13 +5,19 @@ import { GlassCard } from "@/components/ui/GlassCard";
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from "recharts";
 import { formatCurrency } from "@/lib/utils";
 import { useTheme } from "next-themes";
+import { useState, useEffect } from "react";
 
 const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#06b6d4', '#f43f5e'];
 
 export default function AnalyticsPage() {
+  const [mounted, setMounted] = useState(false);
   const transactions = useFinanceStore((state) => state.transactions);
   const { theme } = useTheme();
   const isDark = theme === "dark";
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Expenses by Category
   const expenses = transactions.filter(t => t.type === "expense");
@@ -32,19 +38,19 @@ export default function AnalyticsPage() {
   const recentLargeExpense = expenses.filter(e => e.amount > avgTransactionSize * 1.5).slice(0, 3);
 
   return (
-    <div className="w-full max-w-7xl mx-auto space-y-8 animate-in fade-in zoom-in duration-500 pb-12">
-      <div className="flex flex-col mb-8">
-        <h2 className="text-4xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-slate-900 to-slate-500 dark:from-white dark:to-slate-400">
+    <div className="w-full max-w-7xl mx-auto space-y-4 md:space-y-8 animate-in fade-in zoom-in duration-500 pb-12">
+      <div className="flex flex-col mb-4 md:mb-8 mt-2">
+        <h2 className="text-3xl md:text-4xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-slate-900 to-slate-500 dark:from-white dark:to-slate-400">
           Analytics & Insights
         </h2>
-        <p className="text-slate-500 dark:text-slate-400 mt-2">
+        <p className="text-sm md:text-base text-slate-500 dark:text-slate-400 mt-1 md:mt-2">
           Deep dive into your spending patterns.
         </p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-8">
         {/* Chart Card */}
-        <GlassCard className="p-6 md:p-8 h-[500px] flex flex-col relative w-full">
+        <GlassCard className="p-4 md:p-8 h-[400px] md:h-[500px] flex flex-col relative w-full">
           <div>
             <h3 className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-slate-900 to-slate-700 dark:from-white dark:to-slate-300">
               Spending Breakdown
@@ -53,8 +59,10 @@ export default function AnalyticsPage() {
           </div>
           
           <div className="flex-1 w-full min-h-0">
-            {pieData.length > 0 ? (
-              <ResponsiveContainer width="100%" height="100%">
+            {!mounted ? (
+              <div className="w-full h-full bg-slate-200/50 dark:bg-slate-800/50 animate-pulse rounded-xl" />
+            ) : pieData.length > 0 ? (
+              <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
                 <PieChart>
                   <Pie
                     data={pieData}
@@ -93,8 +101,8 @@ export default function AnalyticsPage() {
         </GlassCard>
 
         {/* Insights List Card */}
-        <div className="space-y-6">
-          <GlassCard className="p-8 relative overflow-hidden group">
+        <div className="space-y-4 md:space-y-6">
+          <GlassCard className="p-4 md:p-8 relative overflow-hidden group">
             <h4 className="text-sm font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-4">
               Top Spending Category
             </h4>
@@ -113,7 +121,7 @@ export default function AnalyticsPage() {
             <div className="absolute -right-8 -bottom-8 w-40 h-40 rounded-full bg-rose-500/10 dark:bg-rose-500/20 blur-3xl opacity-60 pointer-events-none group-hover:scale-150 transition-transform duration-700" />
           </GlassCard>
 
-          <GlassCard className="p-8 relative overflow-hidden group">
+          <GlassCard className="p-4 md:p-8 relative overflow-hidden group">
             <h4 className="text-sm font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-4">
               Key Observations
             </h4>

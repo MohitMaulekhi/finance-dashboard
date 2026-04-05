@@ -17,7 +17,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Glassmorphism Finance Dashboard",
+  title: "FinDash",
   description: "A soft glassmorphic financial dashboard",
 };
 

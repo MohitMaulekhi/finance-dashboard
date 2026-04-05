@@ -43,22 +43,22 @@ export function SummaryCards() {
   ];
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 mb-4 md:mb-8">
       {cards.map((card, idx) => {
         const Icon = card.icon;
         return (
-          <GlassCard key={idx} className="p-6 relative overflow-hidden group hover:scale-[1.02] transition-transform duration-300">
+          <GlassCard key={idx} className="p-4 md:p-6 relative overflow-hidden group hover:scale-[1.02] transition-transform duration-300">
             <div className="relative z-10 flex items-center justify-between">
               <div>
-                <p className="text-sm font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-1">
+                <p className="text-xs md:text-sm font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-1">
                   {card.title}
                 </p>
-                <h3 className="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-slate-900 to-slate-700 dark:from-white dark:to-slate-300">
+                <h3 className="text-2xl md:text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-slate-900 to-slate-700 dark:from-white dark:to-slate-300">
                   {formatCurrency(card.amount)}
                 </h3>
               </div>
-              <div className={`w-14 h-14 rounded-2xl ${card.bgClass} flex items-center justify-center backdrop-blur-xl shadow-inner`}>
-                <Icon className={`w-7 h-7 ${card.color}`} strokeWidth={2.5} />
+              <div className={`w-12 h-12 md:w-14 md:h-14 rounded-2xl ${card.bgClass} flex items-center justify-center backdrop-blur-xl shadow-inner`}>
+                <Icon className={`w-6 h-6 md:w-7 md:h-7 ${card.color}`} strokeWidth={2.5} />
               </div>
             </div>
             

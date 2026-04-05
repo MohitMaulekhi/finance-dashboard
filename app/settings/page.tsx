@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
+import { z } from "zod";
 import { GlassCard } from "@/components/ui/GlassCard";
 import { User, Bell, Shield, Paintbrush, Monitor, Moon, Sun, Check } from "lucide-react";
 import { useFinanceStore } from "@/store/useFinanceStore";
@@ -16,6 +17,13 @@ export default function SettingsPage() {
   const [emailInput, setEmailInput] = useState(userEmail);
   const [avatarInput, setAvatarInput] = useState(userAvatar);
   const [isSaved, setIsSaved] = useState(false);
+  const [errors, setErrors] = useState<{name?: string, email?: string}>({});
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const profileSchema = z.object({
+    name: z.string().min(2, "Name must be at least 2 characters"),
+    email: z.string().email("Invalid email address"),
+  });
 
   // Mock states for other tabs
   const [pushNotifs, setPushNotifs] = useState(true);
@@ -23,21 +31,32 @@ export default function SettingsPage() {
   const [twoFactor, setTwoFactor] = useState(false);
 
   const handleSaveProfile = () => {
-    updateProfile(nameInput, emailInput, avatarInput);
-    setIsSaved(true);
-    setTimeout(() => setIsSaved(false), 3000);
+    try {
+      profileSchema.parse({ name: nameInput, email: emailInput });
+      setErrors({});
+      updateProfile(nameInput, emailInput, avatarInput);
+      setIsSaved(true);
+      setTimeout(() => setIsSaved(false), 3000);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        const newErrors: any = {};
+        error.issues.forEach((err: z.ZodIssue) => {
+          if (err.path[0]) newErrors[err.path[0]] = err.message;
+        });
+        setErrors(newErrors);
+      }
+    }
   };
 
-  const handleAvatarChange = () => {
-    const newAvatars = [
-      "https://i.pravatar.cc/150?img=33",
-      "https://i.pravatar.cc/150?img=47",
-      "https://i.pravatar.cc/150?img=12",
-      "https://i.pravatar.cc/150?img=68"
-    ];
-    const currentIndex = newAvatars.indexOf(avatarInput);
-    const nextIndex = (currentIndex + 1) % newAvatars.length;
-    setAvatarInput(newAvatars[nextIndex]);
+  const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setAvatarInput(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   const tabs = [
@@ -48,19 +67,19 @@ export default function SettingsPage() {
   ];
 
   return (
-    <div className="w-full max-w-7xl mx-auto space-y-8 animate-in fade-in zoom-in duration-500">
-      <div className="flex flex-col mb-8 mt-2">
-        <h2 className="text-4xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-teal-500 dark:from-cyan-400 dark:to-blue-500">
+    <div className="w-full max-w-7xl mx-auto space-y-4 md:space-y-8 animate-in fade-in zoom-in duration-500">
+      <div className="flex flex-col mb-4 md:mb-8 mt-2">
+        <h2 className="text-3xl md:text-4xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-teal-500 dark:from-cyan-400 dark:to-blue-500">
           Settings
         </h2>
-        <p className="text-slate-500 dark:text-slate-400 mt-2">
+        <p className="text-sm md:text-base text-slate-500 dark:text-slate-400 mt-1 md:mt-2">
           Manage your account preferences and settings.
         </p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-8">
         {/* Sidebar Tabs */}
-        <div className="lg:col-span-1 space-y-2">
+        <div className="lg:col-span-1 space-y-2 flex flex-row lg:flex-col overflow-x-auto pb-2 lg:pb-0">
           {tabs.map((tab) => {
             const Icon = tab.icon;
             const isActive = activeTab === tab.id;
@@ -68,7 +87,7 @@ export default function SettingsPage() {
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`w-full flex items-center gap-3 px-4 py-3 rounded-2xl transition-all font-medium ${
+                className={`w-full flex items-center gap-2 md:gap-3 px-3 py-2 md:px-4 md:py-3 rounded-2xl transition-all font-medium whitespace-nowrap ${
                   isActive 
                   ? "bg-white/60 dark:bg-white/[0.08] text-cyan-600 dark:text-cyan-400 shadow-sm border border-transparent dark:border-white/[0.05]"
                   : "text-slate-600 dark:text-slate-400 hover:bg-white/30 dark:hover:bg-white/[0.05]"
@@ -83,7 +102,7 @@ export default function SettingsPage() {
 
         {/* Content Area */}
         <div className="lg:col-span-2">
-          <GlassCard className="p-8 space-y-6">
+          <GlassCard className="p-4 md:p-8 space-y-4 md:space-y-6">
             <h3 className="text-xl font-bold border-b border-slate-200/50 dark:border-white/[0.08] pb-4 text-slate-900 dark:text-slate-100">
               {activeTab} Information
             </h3>
@@ -95,11 +114,18 @@ export default function SettingsPage() {
                     <img src={avatarInput} alt="User avatar" className="w-full h-full object-cover" />
                   </div>
                   <div>
+                    <input 
+                      type="file" 
+                      accept="image/*" 
+                      ref={fileInputRef} 
+                      onChange={handleAvatarChange} 
+                      className="hidden" 
+                    />
                     <button 
-                      onClick={handleAvatarChange}
+                      onClick={() => fileInputRef.current?.click()}
                       className="px-4 py-2 bg-slate-900 dark:bg-white/10 hover:bg-slate-800 dark:hover:bg-white/20 text-white dark:text-slate-200 rounded-xl font-medium transition-colors shadow-sm border border-transparent dark:border-white/[0.05]"
                     >
-                      Cycle Avatar
+                      Change Avatar
                     </button>
                   </div>
                 </div>
@@ -111,8 +137,9 @@ export default function SettingsPage() {
                       type="text" 
                       value={nameInput}
                       onChange={(e) => setNameInput(e.target.value)}
-                      className="w-full px-4 py-2 bg-white/40 dark:bg-black/30 backdrop-blur-xl border border-white/60 dark:border-white/[0.1] rounded-xl outline-none focus:ring-2 focus:ring-cyan-500 text-slate-700 dark:text-slate-100 transition-all" 
+                      className={`w-full px-4 py-2 bg-white/40 dark:bg-black/30 backdrop-blur-xl border ${errors.name ? 'border-rose-500 focus:ring-rose-500' : 'border-white/60 dark:border-white/[0.1] focus:ring-cyan-500'} rounded-xl outline-none focus:ring-2 text-slate-700 dark:text-slate-100 transition-all`} 
                     />
+                    {errors.name && <p className="text-xs text-rose-500 mt-1">{errors.name}</p>}
                   </div>
                   <div className="space-y-2">
                     <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Email Address</label>
@@ -120,8 +147,9 @@ export default function SettingsPage() {
                       type="email" 
                       value={emailInput}
                       onChange={(e) => setEmailInput(e.target.value)}
-                      className="w-full px-4 py-2 bg-white/40 dark:bg-black/30 backdrop-blur-xl border border-white/60 dark:border-white/[0.1] rounded-xl outline-none focus:ring-2 focus:ring-cyan-500 text-slate-700 dark:text-slate-100 transition-all" 
+                      className={`w-full px-4 py-2 bg-white/40 dark:bg-black/30 backdrop-blur-xl border ${errors.email ? 'border-rose-500 focus:ring-rose-500' : 'border-white/60 dark:border-white/[0.1] focus:ring-cyan-500'} rounded-xl outline-none focus:ring-2 text-slate-700 dark:text-slate-100 transition-all`} 
                     />
+                    {errors.email && <p className="text-xs text-rose-500 mt-1">{errors.email}</p>}
                   </div>
                 </div>
                 

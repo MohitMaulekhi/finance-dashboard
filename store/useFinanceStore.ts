@@ -64,7 +64,7 @@ export const useFinanceStore = create<FinanceState>()(
         })),
     }),
     {
-      name: "finance-dashboard-storage",
+      name: "findash-storage",
     }
   )
 );

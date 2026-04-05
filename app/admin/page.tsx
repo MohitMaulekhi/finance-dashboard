@@ -19,17 +19,17 @@ export default function AdminPage() {
   if (role !== "admin") return null;
 
   return (
-    <div className="w-full max-w-7xl mx-auto space-y-8 animate-in fade-in zoom-in duration-500">
-      <div className="flex flex-col mb-8 mt-2">
-        <h2 className="text-4xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-teal-500 dark:from-blue-400 dark:to-teal-300">
+    <div className="w-full max-w-7xl mx-auto space-y-4 md:space-y-8 animate-in fade-in zoom-in duration-500">
+      <div className="flex flex-col mb-4 md:mb-8 mt-2">
+        <h2 className="text-3xl md:text-4xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-teal-500 dark:from-blue-400 dark:to-teal-300">
           Admin Control Panel
         </h2>
-        <p className="text-slate-500 dark:text-slate-400 mt-2">
+        <p className="text-sm md:text-base text-slate-500 dark:text-slate-400 mt-1 md:mt-2">
           System overview and administrative controls.
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-4 md:mb-8">
         {[
           { label: "Total Users", value: "1,248", icon: Users, color: "text-blue-500" },
           { label: "Active Sessions", value: "84", icon: Activity, color: "text-teal-500" },
@@ -38,22 +38,22 @@ export default function AdminPage() {
         ].map((stat, i) => {
           const Icon = stat.icon;
           return (
-            <GlassCard key={i} className="p-6 flex items-center gap-4">
-              <div className={`p-4 rounded-2xl bg-slate-100/50 dark:bg-slate-800/50 ${stat.color}`}>
-                <Icon className="w-6 h-6" />
+            <GlassCard key={i} className="p-4 md:p-6 flex items-center gap-4">
+              <div className={`p-3 md:p-4 rounded-2xl bg-slate-100/50 dark:bg-slate-800/50 ${stat.color}`}>
+                <Icon className="w-5 h-5 md:w-6 md:h-6" />
               </div>
               <div>
-                <p className="text-sm font-medium text-slate-500 dark:text-slate-400">{stat.label}</p>
-                <p className="text-2xl font-bold text-slate-900 dark:text-white">{stat.value}</p>
+                <p className="text-xs md:text-sm font-medium text-slate-500 dark:text-slate-400">{stat.label}</p>
+                <p className="text-xl md:text-2xl font-bold text-slate-900 dark:text-white">{stat.value}</p>
               </div>
             </GlassCard>
           );
         })}
       </div>
       
-      <GlassCard className="p-8">
-        <h3 className="text-xl font-bold mb-4">Recent Audit Logs</h3>
-        <div className="space-y-4">
+      <GlassCard className="p-4 md:p-8">
+        <h3 className="text-lg md:text-xl font-bold mb-4">Recent Audit Logs</h3>
+        <div className="space-y-3 md:space-y-4">
           {[
             { action: "User Role Updated", user: "system_admin", time: "2 mins ago" },
             { action: "Database Backup Completed", user: "system", time: "1 hour ago" },
